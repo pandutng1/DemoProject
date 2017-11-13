@@ -1,20 +1,15 @@
-package com.test;
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import junit.framework.Assert;
 
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
+import org.apache.pdfbox.util.PDFTextStripper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -37,9 +32,9 @@ public class ReadPDF {
 	@Test
 	public void testVerifyPDFTextInBrowser() {
 		
-		driver.get("http://www.princexml.com/samples/invoice/invoicesample.pdf");
-		//driver.findElement(By.linkText("PDF flyer")).click();
-		Assert.assertTrue(verifyPDFContent(driver.getCurrentUrl(), "Organic Items"));
+		driver.get("http://www.princexml.com/samples/");
+		driver.findElement(By.linkText("PDF flyer")).click();
+		Assert.assertTrue(verifyPDFContent(driver.getCurrentUrl(), "Prince Cascading"));
 	}
 
 	/**
@@ -47,32 +42,30 @@ public class ReadPDF {
 	 */
 	@Test
 	public void testVerifyPDFInURL() {
-		driver.get("http://www.princexml.com/samples/invoice/invoicesample.pdf");
-	//	driver.findElement(By.linkText("Organic Items")).click();
+		driver.get("http://www.princexml.com/samples/");
+		driver.findElement(By.linkText("PDF flyer")).click();
 		String getURL = driver.getCurrentUrl();
 		Assert.assertTrue(getURL.contains(".pdf"));
 	}
 
 	
-public boolean verifyPDFContent(String strURL, String reqTextInPDF) {
+	public boolean verifyPDFContent(String strURL, String reqTextInPDF) {
 		
 		boolean flag = false;
-		RandomAccessRead  input = null;
-		PDFTextStripper pdfStripper = null;
+		
+		PDFTextStripperByArea pdfStripper = null;
 		PDDocument pdDoc = null;
 		COSDocument cosDoc = null;
 		String parsedText = null;
-		PDFParser parser = null;
 
 		try {
 			URL url = new URL(strURL);
 			BufferedInputStream file = new BufferedInputStream(url.openStream());
-			//PDFParser parser = new PDFParser(file);
-			//parser = new PDFParser((RandomAccessRead) file);
-			parser = new PDFParser(new RandomAccessFile(file,”r”));		
+			PDFParser parser = new PDFParser(file);
+			
 			parser.parse();
 			cosDoc = parser.getDocument();
-			pdfStripper = new PDFTextStripper();	
+			pdfStripper = new PDFTextStripper();
 			pdfStripper.setStartPage(1);
 			pdfStripper.setEndPage(1);
 			
@@ -107,5 +100,4 @@ public boolean verifyPDFContent(String strURL, String reqTextInPDF) {
 	public void tearDown() {
 		driver.quit();
 	}
-
 }
